@@ -1,6 +1,9 @@
 import connectMongoDB from "@/libs/mongodb";
-import Topic from "@/models/topic";
+import User from "@/models/user";
 import { NextResponse } from "next/server";
+import { parse } from "url";
+import { parse as parseQueryString } from "querystring";
+
 
 export async function POST(request) {
   const { title, description } = await request.json();
@@ -9,9 +12,28 @@ export async function POST(request) {
   return NextResponse.json({ message: "Topic Created" }, { status: 201 });
 }
 
-export async function GET() {
+export async function GET(request) {
   await connectMongoDB();
-  const topics = await Topic.find();
+  
+  const { query } = parse(request.url);
+  
+
+  // Parse the query parameters using the querystring module.
+  const queryParams = parseQueryString(query) || {};
+
+  console.log(queryParams)
+  console.log("hello")
+  // Use the 'title' query parameter or provide a default value if it's not present.
+  // const title = queryParams.title || "geetz";
+
+  
+ 
+  
+  const titles = queryParams.emailid;
+  console.log("heelo", titles)
+  const topics = await User.find({
+    email: titles 
+  });
   return NextResponse.json({ topics });
 }
 
